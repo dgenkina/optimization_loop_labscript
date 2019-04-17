@@ -1,4 +1,5 @@
 from __future__ import division
+import os
 import numpy as np
 import labscript_utils.h5_lock
 import h5py
@@ -6,11 +7,12 @@ import matplotlib.pyplot as plt
 from lyse import *
 import pandas as pd
 
-
+from labscript_utils.labconfig import LabConfig
+labconfig = LabConfig()
 from optimization_classes_v2 import *
 
-experiment_name = 'testrun_nothing'
-globals_filepath_list = [r'C:\labscript_suite\userlib\labscriptlib\Assembly_room\testrun.h5']
+experiment_name = 'test_experiment'
+globals_filepath_list = [os.path.join(labconfig.get('default', 'labscriptlib'), 'globals.h5')]
 param_name_list = ['dummy1','dummy2']
 param_min_max_list = [(-5.0,5.0),(-5.0,5.0)]
 

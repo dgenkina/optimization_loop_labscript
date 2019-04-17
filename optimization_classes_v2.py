@@ -10,7 +10,7 @@ import h5py
 
 class OptimizationProcess():
 	def __init__(self,experiment_name,globals_filepath_list,param_name_list,param_min_max_list,initial_param_vals=None,use_current_param_vals=True):
-		self.param_name_list=param_name_list
+		self.param_name_list=np.array(param_name_list)
 		self.param_min_max_list=np.array(param_min_max_list)
 		self.initial_param_vals=initial_param_vals
 		self.save_Dict = {}
@@ -381,7 +381,7 @@ class OptimizationProcess():
 class DifferentialEvolution(OptimizationProcess):
 
 	def __init__(self, experiment_name, globals_filepath_list,param_name_list, bounds, mut=0.8, crossp=0.7, popsize=20, loops=100,samples=1,resample=5,elite=0.5,use_current_param_vals=True):
-		self.param_name_list=np.array(param_name_list)
+		OptimizationProcess.__init__(self, experiment_name, globals_filepath_list, param_name_list, bounds, use_current_param_vals=use_current_param_vals)
 		self.dimensions = self.param_name_list.size
 		#self.nonoise = nonoise
 		self.DE_parms_dict = {}
@@ -399,8 +399,6 @@ class DifferentialEvolution(OptimizationProcess):
 		self.min_b = min_b
 		self.max_b = max_b 
 		self.diff = np.fabs(min_b - max_b)
-		self.experiment_name = experiment_name
-		self.globals_filepath_list = globals_filepath_list
 		self.make_globals_file(**self.DE_parms_dict)
 	    
 		pop = []

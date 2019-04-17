@@ -1,4 +1,4 @@
-from __future__ import division
+from __future__ import division, print_function
 import numpy as np
 import h5py
 import matplotlib.pyplot as plt
@@ -23,7 +23,7 @@ def ackley( x, a=20, b=0.2, c=2*np.pi ):
 ackley._bounds = [-5.0, 5.0]
 
 def sphere( x):
-	return np.dot(x,x)
+    return np.dot(x,x)
 
 def rosenbrock( x ):  
     """ http://en.wikipedia.org/wiki/Rosenbrock_function """
@@ -56,12 +56,12 @@ def noise(funct, sigma):
 
 
 def get_cost(average_number):
-	cost = - np.exp(-(float(average_number)-200.0)**2.0/1000.0)
-	return cost
+    cost = - np.exp(-(float(average_number)-200.0)**2.0/1000.0)
+    return cost
 
 def get_cost_Himmelbaum(average_number,dummy1,dummy2):
-	cost = - np.exp(-(float(average_number)-200.0)**2.0/10000.0)+(dummy1**2.0+dummy2-11.0)**2.0+(dummy1+dummy2**2.0-7)**2.0
-	return cost
+    cost = - np.exp(-(float(average_number)-200.0)**2.0/10000.0)+(dummy1**2.0+dummy2-11.0)**2.0+(dummy1+dummy2**2.0-7)**2.0
+    return cost
 
 
 
@@ -71,30 +71,35 @@ except NameError:
     import sys
     path = sys.argv[1]
 
-with h5py.File(lyse.path) as dummy_h5_label:
-	dummy1 = dummy_h5_label['globals'].attrs['dummy1']
-	dummy2 = dummy_h5_label['globals'].attrs['dummy2']
+series = lyse.data(lyse.path)
+x = series['x']
+y = series['y']
+z = series['z']
 
+# with h5py.File(lyse.path) as dummy_h5_label:
+#     x = dummy_h5_label['globals'].attrs['x']
+#     y = dummy_h5_label['globals'].attrs['y']
+#     z = dummy_h5_label['globals'].attrs['z']
 
 run_instance = lyse.Run(lyse.path)
-print lyse.path
+print(lyse.path)
 
 sigma0 = (3/2/np.pi) * 780e-9**2
 
 
 # atom_number = np.nansum(naive_OD*(5.6e-6/6.0)**2/sigma0)
-x = np.array([dummy1,dummy2])
-cost = ackley(x)
+params = np.array([x, y, z])
+cost = ackley(params)
 
 
 # run_instance.save_result('average_counts', atom_avg)
 run_instance.save_result('Cost', cost)
 
-print 'Saved Cost value of' + str(cost)
+print('Saved Cost value of ' + str(cost))
 
 
 
 
 
 
-	
+    
