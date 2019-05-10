@@ -65,37 +65,7 @@ def get_cost_Himmelbaum(average_number,dummy1,dummy2):
 
 
 
-try:
-    lyse.path
-except NameError:
-    import sys
-    path = sys.argv[1]
 
-series = lyse.data(lyse.path)
-x = series['x']
-y = series['y']
-z = series['z']
-
-# with h5py.File(lyse.path) as dummy_h5_label:
-#     x = dummy_h5_label['globals'].attrs['x']
-#     y = dummy_h5_label['globals'].attrs['y']
-#     z = dummy_h5_label['globals'].attrs['z']
-
-run_instance = lyse.Run(lyse.path)
-print(lyse.path)
-
-sigma0 = (3/2/np.pi) * 780e-9**2
-
-
-# atom_number = np.nansum(naive_OD*(5.6e-6/6.0)**2/sigma0)
-params = np.array([x, y, z])
-cost = ackley(params)
-
-
-# run_instance.save_result('average_counts', atom_avg)
-run_instance.save_result('Cost', cost)
-
-print('Saved Cost value of ' + str(cost))
 
 
 

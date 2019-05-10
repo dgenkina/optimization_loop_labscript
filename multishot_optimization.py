@@ -6,25 +6,44 @@ import h5py
 import matplotlib.pyplot as plt
 from lyse import *
 import pandas as pd
-
+import runmanager.remote
 from labscript_utils.labconfig import LabConfig
 labconfig = LabConfig()
-from optimization_classes_v2 import *
+from optimization_classes import *
 
 save_file_path = os.path.join(labconfig.get('DEFAULT', 'experiment_shot_storage'), 'Optimization_testRoutine_1.h5')
 
-from analysislib.my_optimization_globals import alpha
+params = ['param1', 'param2']
+param_ranges = [[-2.0,2.0],[-2.0,2.0]]
+optimizer = GradientDescent(save_file_path, params, param_ranges, alpha=1.0, epsilon=0.0001)
 
-optimizer = GradientDescent('test.h5', params=['x', 'y', 'z'], alpha=alpha)
 
-new_shots = df[df['fitness'] == np.nan]
-for shot in new_shots:
-    df[]
+df = data()
+try:
+    singleshot_filename = 'get_fitness_singleshot'
+    fitness = df[singleshot_filename,'fitness'].tolist()
+    trial_id = df['trial_id'].tolist()
+    fitnesses = pd.DataFrame({'fitness':fitness,'trial_id': trial_id})
+except(KeyError):
+    print(''''No fitnesses found. If this is not the first run of the 
+          optimization routine, check that you have given the right
+          name for the singleshot routine to use and that it is functioning 
+          properly. Setting fitnesses dictionary to empty.''')
+    fitnesses = pd.DataFrame({})
 
-# compute fitnesses
-new_trials = optimizer.get_trials({shot['trial_id']: shot['fitnesses'] for shot in newly_analysed_shots})
 
-for params in new_trials:
-    for name, value in params.items():
-        runmanager.remote.set_value(name, value)
+new_trials = optimizer.get_trials(fitnesses)
+print('New trials:')
+print(new_trials)
+
+
+for ind in new_trials.index.values.tolist(): 
+    globals = new_trials.loc[ind].to_dict()
+    runmanager.remote.set_globals(globals)
     runmanager.remote.engage()
+
+try:
+    _figMulti_ = plt.figure()
+    plt.plot(trial_id, fitness, 'bo')
+except:
+    pass
