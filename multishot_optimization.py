@@ -11,11 +11,11 @@ from labscript_utils.labconfig import LabConfig
 labconfig = LabConfig()
 from optimization_classes import *
 
-save_file_path = os.path.join(labconfig.get('DEFAULT', 'experiment_shot_storage'), 'Optimization_testRoutine_1.h5')
+save_file_path = os.path.join(labconfig.get('DEFAULT', 'experiment_shot_storage'), 'Optimization_testRoutine_6.h5')
 
-params = ['param1', 'param2']
+params = ['dummy1', 'dummy2']
 param_ranges = [[-2.0,2.0],[-2.0,2.0]]
-optimizer = GradientDescent(save_file_path, params, param_ranges, alpha=1.0, epsilon=0.0001)
+optimizer = DownhillSimplex(save_file_path, params, param_ranges, initial_point = [0,0])
 
 
 df = data()
@@ -31,8 +31,7 @@ except(KeyError):
           properly. Setting fitnesses dictionary to empty.''')
     fitnesses = pd.DataFrame({})
 
-
-new_trials = optimizer.get_trials(fitnesses)
+new_trials, fitness_best = optimizer.get_trials(fitnesses)
 print('New trials:')
 print(new_trials)
 
@@ -44,6 +43,7 @@ for ind in new_trials.index.values.tolist():
 
 try:
     _figMulti_ = plt.figure()
-    plt.plot(trial_id, fitness, 'bo')
+    #plt.plot(trial_id, fitness, 'bo')
+    plt.plot(fitness_best, 'bo')
 except:
     pass
