@@ -11,16 +11,16 @@ from labscript_utils.labconfig import LabConfig
 labconfig = LabConfig()
 from optimization_classes import *
 
-save_file_path = os.path.join(labconfig.get('DEFAULT', 'experiment_shot_storage'), 'Optimization_testRoutine_6.h5')
+save_file_path = os.path.join(labconfig.get('DEFAULT', 'experiment_shot_storage'), 'Optimization_testRoutine_8.h5')
 
-params = ['dummy1', 'dummy2']
-param_ranges = [[-2.0,2.0],[-2.0,2.0]]
-optimizer = DownhillSimplex(save_file_path, params, param_ranges, initial_point = [0,0])
+params = ['rfEvapStart_amp', 'rfEvapStart_freq', 'rfEvapMid_amp', 'rfEvapEnd_amp', 'rfEvapEnd_freq']
+param_ranges = [[0.0,1.0],[10.0,40.0], [0.0, 1.0], [0.0, 1.0], [1.0, 20.0]]
+optimizer = DownhillSimplex(save_file_path, params, param_ranges, initial_point = [0.5623, 22, .78, .45, 4] )
 
 
 df = data()
 try:
-    singleshot_filename = 'get_fitness_singleshot'
+    singleshot_filename = 'single_shot_optimization'
     fitness = df[singleshot_filename,'fitness'].tolist()
     trial_id = df['trial_id'].tolist()
     fitnesses = pd.DataFrame({'fitness':fitness,'trial_id': trial_id})

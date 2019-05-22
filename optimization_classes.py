@@ -278,9 +278,6 @@ class DownhillSimplex(OptimizationRoutine):
 
             fitness_best = []
             self.save_dict['fitness_best'] = fitness_best
-            print ('fitness best type before saving')
-            print(type(fitness_best))
-            #self.save_dict['fitness_best'] = fitness_best
             # Tells the experiment to run the new trials  
             new_trials = self.trials[cols_to_output]
             # Creates a list to plot the best y_values
