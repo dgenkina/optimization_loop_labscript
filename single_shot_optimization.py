@@ -15,12 +15,14 @@ orientation1 = 'xy'
 orientationXZ = 'xz'
 
 #camera = 'imagesFlea3'
-try:
-    lyse.path
-except NameError:
-    import sys
-    path = sys.argv[1]
-
+#try:
+#   lyse.path
+#except NameError:
+#    import sys
+#    path = sys.argv[1]
+path = lyse.path
+if path is None:
+    path = "C:/Users/rubidium/Downloads/2018_11_19_20180906_quadTrap_toOptimize_00.h5"
 
 with h5py.File(lyse.path) as h5_file:
     camera_name = camera 
@@ -32,9 +34,9 @@ with h5py.File(lyse.path) as h5_file:
 
 
 
-# with h5py.File(path) as dummy_h5_label:
-#     camera_name = camera 
-#     atoms, probe, dark = dummy_h5_label['data/'+camera_name]['Raw'][:]
+#with h5py.File(path) as dummy_h5_label:
+#    camera_name = camera 
+#    atoms, probe, dark = dummy_h5_label['data/'+camera_name]['Raw'][:]
 
 df = lyse.data()
 #df = df.sort_values('run time')
@@ -75,9 +77,8 @@ ax5 = plt.subplot(235)
 im5 = ax5.imshow(OD_ROI, vmin=-0.1, vmax=1.5, interpolation='None',aspect='equal',cmap = 'jet')
 plt.colorbar(im5)
 
-
-run_instance = lyse.Run(lyse.path)
-print(lyse.path)
+run_instance = lyse.Run(path)
+print(path)
 
 def gaussian(x_list, x0, A, sigma, offset):
     y_list = A*np.exp(-(x_list-x0)**2.0/(2.0*sigma**2.0)) + offset
@@ -93,38 +94,52 @@ OD_3 = np.ones([112, 74])*3
 atom3 = np.nansum(OD_3*(5.6e-6/6.0)**2/sigma0)
 
 fig = plt.figure()
+
+max_ind = np.unravel_index(np.argmax(naive_OD), naive_OD.shape)
+print(max_ind)
+
 y_data = plt.subplot(121)
-y_slice = naive_OD[:, 324]
+y_slice = naive_OD[:, 315]
+#y_slice = naive_OD[:, max_ind[1]]
 y_data.plot(y_slice, '.')
 Y = np.arange(y_slice.size)
 y = np.sum(Y*y_slice)/np.sum(y_slice)
 y_width = np.sqrt(np.abs(np.sum((Y-y)**2*y_slice)/np.sum(y_slice)))
-max = y_slice.max()
-y_fit = lambda t : max*np.exp(-(t-y)**2/(2*y_width**2))
-y_data.plot(y_fit(Y), '-')
-y_stdev = y_width
+y_max = y_slice.max()
+y_max_ind = np.where(y_slice == y_max)[0][0]
+popt, pcov = popt, pcov = optimize.curve_fit(gaussian, Y, y_slice, p0=(y_max_ind, y_max,y_width,0.0))
+y_data.plot(Y, gaussian(Y, *popt), '-')
+y_stdev = popt[2]
 
 x_data = plt.subplot(122)
-x_slice = naive_OD[244, :]
+x_slice = naive_OD[290, :]
+#x_slice = naive_OD[max_ind[0], :]
 x_data.plot(x_slice, '.')
 X = np.arange(x_slice.size)
 x = np.sum(X*x_slice)/np.sum(x_slice)
 x_width = np.sqrt(np.abs(np.sum((X-x)**2*x_slice)/np.sum(x_slice)))
 x_max = x_slice.max()
 x_max_ind = np.where(x_slice==x_max)[0][0]
-print(x_max_ind, x_max,x_width)
 popt, pcov = optimize.curve_fit(gaussian, X, x_slice, p0=(x_max_ind, x_max,x_width,0.0))
-#x_fit = lambda t : max*np.exp(-(t-x)**2/(2*x_width**2))
-
-
 x_data.plot(X,gaussian(X,*popt), '-')
 x_stdev = popt[2]
-
-print(y_stdev, x_stdev)
+plt.show
+#print(y_stdev, x_stdev)
 
 # x = np.array([dummy1,dummy2])
-fitness = -atom_number + 1E4 * ((y_stdev - 111.5425302679207) + (x_stdev - 73.88653133767103))
-# reference fitness = -52795.83038593636
+
+#fitness = -atom_number + 1E4 * ((y_stdev - 80) + (x_stdev - 75))
+
+def fitness_funct(y_stdev, x_stdev, atom_number): 
+    fitness = -atom_number
+    if y_stdev >= 85:
+        fitness += 5E3 * (y_stdev - 80) 
+    if x_stdev >= 80:
+        fitness += 5E3 * (x_stdev - 75)
+    return fitness
+
+fitness = fitness_funct(y_stdev, x_stdev, atom_number)
+
 
 # run_instance.save_result('average_counts', atom_avg)
 run_instance.save_result('fitness', fitness)

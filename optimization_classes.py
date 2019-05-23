@@ -188,7 +188,7 @@ class DownhillSimplex(OptimizationRoutine):
         self.initial_point = initial_point
 
 
-    def initialize(self, save_file, params, param_ranges, side = 1, initial_point = []):
+    def initialize(self, save_file, params, param_ranges, side = .5, initial_point = []):
         # Define the columns of your dataframe
         # Must have all parameter names and 'trial_id','fitness'
         #===================================================================================
@@ -316,6 +316,7 @@ class DownhillSimplex(OptimizationRoutine):
                     
                     # Calculates move distance for the new test point
                     move_distance = (-(num_params + 1) * x_vertices[index_worst])/num_params
+                    
                     fitness_best.append(y_vertices[index_best])
                     print (fitness_best)
                     
@@ -412,9 +413,6 @@ class DownhillSimplex(OptimizationRoutine):
                         
                         # Calculates move distance for the new test point
                         move_distance = (-(num_params + 1) * x_vertices[index_worst])/num_params
-                        
-                        # Adds the best fitness value to a list that I can plot
-                        fitness_best.append(y_vertices[index_best])
             
                         # Finds a new point by reflecting the simplex and takes the function value there
                         x_new = x_vertices[index_worst] + 2 * move_distance                        
