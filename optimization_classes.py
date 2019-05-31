@@ -1,3 +1,4 @@
+
 import numpy as np
 import pandas as pd
 import os
@@ -181,12 +182,22 @@ class GradientDescent(OptimizationRoutine):
         return OptimizationRoutine.check_bounds_and_clamp(self,param_name,param_value)
 
 class DownhillSimplex(OptimizationRoutine):
+<<<<<<< HEAD
     def __init__(self, save_file, params, param_ranges, side = 1):
         OptimizationRoutine.__init__(self, save_file, params, param_ranges)
         self.side = side
 
 
     def initialize(self, save_file, params, param_ranges, side = 1):
+=======
+    def __init__(self, save_file, params, param_ranges, side = 1, initial_point = []):
+        OptimizationRoutine.__init__(self, save_file, params, param_ranges)
+        self.side = side
+        self.initial_point = initial_point
+
+
+    def initialize(self, save_file, params, param_ranges, side = .5, initial_point = []):
+>>>>>>> e635434002d746ebd0fcaf5776a459bd20c57355
         # Define the columns of your dataframe
         # Must have all parameter names and 'trial_id','fitness'
         #===================================================================================
@@ -241,11 +252,23 @@ class DownhillSimplex(OptimizationRoutine):
         if self.trials.shape[0] == 0:
             print('Making first trials')
             # Makes an original array of random starting values for each of the parameters
+<<<<<<< HEAD
             initial_point = np.random.rand(num_params)*param_diff + param_min
             
             # Creates initial arrays for the coordinates
             x_vertices = np.zeros((num_params + 1, num_params))
 
+=======
+            if self.initial_point == []:
+                initial_point = np.random.rand(num_params)*param_diff + param_min
+            else:
+                initial_point = self.initial_point
+                
+            # Creates initial arrays for the coordinates
+            x_vertices = np.zeros((num_params + 1, num_params))
+            
+            # Adds the initial point to the array to create the other vertex values
+>>>>>>> e635434002d746ebd0fcaf5776a459bd20c57355
             x_vertices[0] = initial_point
             
             set_size = num_params + 1
@@ -269,13 +292,27 @@ class DownhillSimplex(OptimizationRoutine):
             self.save_dict['tag'] = tag
             self.save_dict['set_size'] = set_size
             self.save_dict['x vertices'] = x_vertices
+<<<<<<< HEAD
           
             # Tells the experiment to run the new trials  
             new_trials = self.trials[cols_to_output]
+=======
+
+            fitness_best = []
+            self.save_dict['fitness_best'] = fitness_best
+            # Tells the experiment to run the new trials  
+            new_trials = self.trials[cols_to_output]
+            # Creates a list to plot the best y_values
+>>>>>>> e635434002d746ebd0fcaf5776a459bd20c57355
             
         else:   
             print('Not first trial')
             set_size = self.save_dict['set_size']
+<<<<<<< HEAD
+=======
+            fitness_best = self.save_dict['fitness_best']
+            fitness_best = list(fitness_best)
+>>>>>>> e635434002d746ebd0fcaf5776a459bd20c57355
             
             max_id = np.max(self.trials['trial_id'])
             finished_trials = self.trials.loc[pd.notnull(self.trials['fitness'])]
@@ -289,6 +326,10 @@ class DownhillSimplex(OptimizationRoutine):
             if np.all(np.isin(np.arange(set_size), last_trials['num_in_set'])):  
                 print('Previous set completed')
                 tag = self.save_dict['tag']
+<<<<<<< HEAD
+=======
+                #fitness_best = self.save_dict['fitness_best']
+>>>>>>> e635434002d746ebd0fcaf5776a459bd20c57355
                 # If this is the first set after we created the initial array of x_vertices:
                 if last_set_num == 0 or tag == 'shrunk':
                     print('If second run or shrunk')
@@ -305,9 +346,15 @@ class DownhillSimplex(OptimizationRoutine):
                     # Calculates move distance for the new test point
                     move_distance = (-(num_params + 1) * x_vertices[index_worst])/num_params
                     
+<<<<<<< HEAD
                     # Adds the best y value to a list that I can plot
                     #y_best.append(y_vertices[index_best])
         
+=======
+                    fitness_best.append(y_vertices[index_best])
+                    print (fitness_best)
+                    
+>>>>>>> e635434002d746ebd0fcaf5776a459bd20c57355
                     # Finds a new point by reflecting the simplex and takes the function value there
                     x_new = x_vertices[index_worst] + 2 * move_distance
                     self.save_dict['x_new'] = x_new
@@ -330,7 +377,12 @@ class DownhillSimplex(OptimizationRoutine):
                     self.save_dict['tag'] = tag
                     self.save_dict['y_vertices'] = y_vertices
                     self.save_dict['set_size'] = set_size
+<<<<<<< HEAD
                 
+=======
+                    #self.save_dict['fitness_best'] = fitness_best
+                    
+>>>>>>> e635434002d746ebd0fcaf5776a459bd20c57355
                     new_trials = self.trials.loc[self.trials['set']==current_set,cols_to_output]
                 
                 else:
@@ -341,22 +393,41 @@ class DownhillSimplex(OptimizationRoutine):
                     y_vertices = np.array(self.save_dict['y_vertices'])
                     x_new = self.save_dict['x_new']
                     tag = self.save_dict['tag']
+<<<<<<< HEAD
                     print(y_vertices)
                     # Locates the vertices with the best and worst fitnesses
                     index_best = np.argmin(y_vertices)
                     print(index_best)
                     index_worst = np.argmax(y_vertices)
                     
+=======
+
+                    # Locates the vertices with the best and worst fitnesses
+                    index_best = np.argmin(y_vertices)
+
+                    index_worst = np.argmax(y_vertices)
+                    
+                    # Add the best fitness value to a list to plot
+                    fitness_best.append(y_vertices[index_best])
+                    
+>>>>>>> e635434002d746ebd0fcaf5776a459bd20c57355
                     #Calculates move distance for the new test point
                     move_distance = (-(num_params + 1) * x_vertices[index_worst])/num_params
                     
                     # Gets the fitness of my last point and saves it as y_new
                     y_new = last_trials['fitness'].tolist()[0]
+<<<<<<< HEAD
                     print(y_new)
                     print(y_vertices[index_best])
                     #if self.save_dict['tag'] == 'reflected':
                     if y_new <= y_vertices[index_best]:
                         print("Reflected point is best, accepting and expanding")
+=======
+
+                    if y_new <= y_vertices[index_best]:
+                        print("Reflected point is best, accepting and expanding")
+                        
+>>>>>>> e635434002d746ebd0fcaf5776a459bd20c57355
                         # If the new point is the best one, exchange it for the worst point
                         x_vertices[index_worst] = x_new
                         y_vertices[index_worst] = y_new
@@ -383,6 +454,10 @@ class DownhillSimplex(OptimizationRoutine):
                         self.save_dict['x_new'] = x_new
                         self.save_dict['set_size'] = set_size
                         self.save_dict['y_new'] = y_new
+<<<<<<< HEAD
+=======
+                        #self.save_dict['fitness_best'] = fitness_best
+>>>>>>> e635434002d746ebd0fcaf5776a459bd20c57355
                             
                         new_trials = self.trials.loc[self.trials['set']==current_set,cols_to_output]
                         
@@ -397,6 +472,7 @@ class DownhillSimplex(OptimizationRoutine):
                         
                         # Calculates move distance for the new test point
                         move_distance = (-(num_params + 1) * x_vertices[index_worst])/num_params
+<<<<<<< HEAD
                         
                         # Adds the best y value to a list that I can plot
                         #y_best.append(y_vertices[index_best])
@@ -405,6 +481,11 @@ class DownhillSimplex(OptimizationRoutine):
                         x_new = x_vertices[index_worst] + 2 * move_distance
                         self.save_dict['x_new'] = x_new
                         
+=======
+            
+                        # Finds a new point by reflecting the simplex and takes the function value there
+                        x_new = x_vertices[index_worst] + 2 * move_distance                        
+>>>>>>> e635434002d746ebd0fcaf5776a459bd20c57355
                         
                         # Establishes a new set size because it'll only be taking one point at a time
                         set_size = 1  
@@ -418,7 +499,10 @@ class DownhillSimplex(OptimizationRoutine):
                         trial['num_in_set'] = 0
                         trial['param_ranges'] = self.param_ranges
                         self.trials = self.trials.append(trial, ignore_index=True)
+<<<<<<< HEAD
                         print(trial)
+=======
+>>>>>>> e635434002d746ebd0fcaf5776a459bd20c57355
                         tag = 'reflected'
                         
                         self.save_dict['tag'] = tag
@@ -426,10 +510,18 @@ class DownhillSimplex(OptimizationRoutine):
                         self.save_dict['x vertices'] = x_vertices
                         self.save_dict['x_new'] = x_new
                         self.save_dict['set_size'] = set_size
+<<<<<<< HEAD
                         new_trials = self.trials.loc[self.trials['set']==current_set,cols_to_output]
 
                         
 
+=======
+                        #self.save_dict['fitness_best'] = fitness_best
+                        
+                        new_trials = self.trials.loc[self.trials['set']==current_set,cols_to_output]
+
+                        
+>>>>>>> e635434002d746ebd0fcaf5776a459bd20c57355
                     else:
                         print("The reflected point is the worst point")
                         if tag == 'contracted' and y_new >= y_vertices[index_worst]:
@@ -458,6 +550,10 @@ class DownhillSimplex(OptimizationRoutine):
                             self.save_dict['x vertices'] = x_vertices
                             self.save_dict['x_new'] = x_new
                             self.save_dict['set_size'] = set_size
+<<<<<<< HEAD
+=======
+                            #self.save_dict['fitness_best'] = fitness_best
+>>>>>>> e635434002d746ebd0fcaf5776a459bd20c57355
                             new_trials = self.trials.loc[self.trials['set']==current_set,cols_to_output]    
                             
                         else:    
@@ -484,11 +580,16 @@ class DownhillSimplex(OptimizationRoutine):
                             self.save_dict['x vertices'] = x_vertices
                             self.save_dict['x_new'] = x_new
                             self.save_dict['set_size'] = set_size    
+<<<<<<< HEAD
+=======
+                            #self.save_dict['fitness_best'] = fitness_best
+>>>>>>> e635434002d746ebd0fcaf5776a459bd20c57355
                             new_trials = self.trials.loc[self.trials['set']==current_set,cols_to_output]
             
             else:
                 new_trials = pd.DataFrame({})
                 print("Awaiting more trials")
+<<<<<<< HEAD
                     
             
         self.save_state(self.save_file)
@@ -496,3 +597,12 @@ class DownhillSimplex(OptimizationRoutine):
 
     def check_bounds_and_clamp(self,param_name,param_value):
         return OptimizationRoutine.check_bounds_and_clamp(self,param_name,param_value)
+=======
+        
+        self.save_dict['fitness_best'] = fitness_best              
+        self.save_state(self.save_file)
+        return new_trials, fitness_best
+
+    def check_bounds_and_clamp(self,param_name,param_value):
+        return OptimizationRoutine.check_bounds_and_clamp(self,param_name,param_value)
+>>>>>>> e635434002d746ebd0fcaf5776a459bd20c57355

@@ -19,8 +19,8 @@ except NameError:
     path = sys.argv[1]
 
 series = lyse.data(lyse.path)
-param1 = series['param1']
-param2 = series['param2']
+param1 = series['dummy1']
+param2 = series['dummy2']
 
 
 run_instance = lyse.Run(lyse.path)

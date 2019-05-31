@@ -11,16 +11,24 @@ from labscript_utils.labconfig import LabConfig
 labconfig = LabConfig()
 from optimization_classes import *
 
+<<<<<<< HEAD
 save_file_path = os.path.join(labconfig.get('DEFAULT', 'experiment_shot_storage'), 'Optimization_testRoutine_4.h5')
 
 params = ['param1', 'param2']
 param_ranges = [[-1.0,2.0],[-1.0,2.0]]
 optimizer = DownhillSimplex(save_file_path, params, param_ranges, side = 1.5)
+=======
+save_file_path = os.path.join(labconfig.get('DEFAULT', 'experiment_shot_storage'), 'Optimization_testRoutine_8.h5')
+
+params = ['rfEvapStart_amp', 'rfEvapStart_freq', 'rfEvapMid_amp', 'rfEvapEnd_amp', 'rfEvapEnd_freq']
+param_ranges = [[0.0,1.0],[10.0,40.0], [0.0, 1.0], [0.0, 1.0], [1.0, 20.0]]
+optimizer = DownhillSimplex(save_file_path, params, param_ranges, initial_point = [0.5623, 22, .78, .45, 4] )
+>>>>>>> e635434002d746ebd0fcaf5776a459bd20c57355
 
 
 df = data()
 try:
-    singleshot_filename = 'get_fitness_singleshot'
+    singleshot_filename = 'single_shot_optimization'
     fitness = df[singleshot_filename,'fitness'].tolist()
     trial_id = df['trial_id'].tolist()
     fitnesses = pd.DataFrame({'fitness':fitness,'trial_id': trial_id})
@@ -31,8 +39,7 @@ except(KeyError):
           properly. Setting fitnesses dictionary to empty.''')
     fitnesses = pd.DataFrame({})
 
-
-new_trials = optimizer.get_trials(fitnesses)
+new_trials, fitness_best = optimizer.get_trials(fitnesses)
 print('New trials:')
 print(new_trials)
 
@@ -44,6 +51,7 @@ for ind in new_trials.index.values.tolist():
 
 try:
     _figMulti_ = plt.figure()
-    plt.plot(trial_id, fitness, 'bo')
+    #plt.plot(trial_id, fitness, 'bo')
+    plt.plot(fitness_best, 'bo')
 except:
     pass
