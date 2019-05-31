@@ -1,10 +1,6 @@
 from __future__ import division, print_function
 import numpy as np
-import h5py
-import matplotlib.pyplot as plt
-import lyse
-#import gradient_descent_functions as optimization_protocol
-import pandas as pd
+
 #from optimization_classes import *
 
 

@@ -31,7 +31,7 @@ sigma0 = (3/2/np.pi) * 780e-9**2
 
 # atom_number = np.nansum(naive_OD*(5.6e-6/6.0)**2/sigma0)
 params = np.array([param1, param2])
-fitness = rosenbrock(params)
+fitness = sphere(params)
 
 
 # run_instance.save_result('average_counts', atom_avg)

@@ -11,11 +11,11 @@ from labscript_utils.labconfig import LabConfig
 labconfig = LabConfig()
 from optimization_classes import *
 
-save_file_path = os.path.join(labconfig.get('DEFAULT', 'experiment_shot_storage'), 'Optimization_testRoutine_1.h5')
+save_file_path = os.path.join(labconfig.get('DEFAULT', 'experiment_shot_storage'), 'Optimization_testRoutine_4.h5')
 
 params = ['param1', 'param2']
-param_ranges = [[-2.0,2.0],[-2.0,2.0]]
-optimizer = GradientDescent(save_file_path, params, param_ranges, alpha=1.0, epsilon=0.0001)
+param_ranges = [[-1.0,2.0],[-1.0,2.0]]
+optimizer = DownhillSimplex(save_file_path, params, param_ranges, side = 1.5)
 
 
 df = data()
